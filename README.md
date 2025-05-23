@@ -1,5 +1,7 @@
 # HireMeNowAI
 
+![HireMeNowAI Screenshot](public/images/snapshot.png)
+
 Local LLM-Powered Job Matching Using Resume Analysis and Indeed Job Scraping
 
 ## Features
