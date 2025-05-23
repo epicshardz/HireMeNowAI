@@ -1,0 +1,194 @@
+<div class="container mt-4">
+    <div class="row">
+        <!-- Resume Analysis Section -->
+        <div class="col-md-3">
+            <div class="card mb-4 sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Resume Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Identified Positions:</h6>
+                    <ul class="list-unstyled">
+                        <% analysis.jobTitles.forEach(function(title) { %>
+                            <li><span class="badge bg-info"><%= title %></span></li>
+                        <% }); %>
+                    </ul>
+
+                    <h6 class="mt-3">Key Skills:</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        <% analysis.skills.forEach(function(skill) { %>
+                            <span class="badge bg-secondary"><%= skill %></span>
+                        <% }); %>
+                    </div>
+
+                    <h6 class="mt-3">Experience Level:</h6>
+                    <p><%= analysis.experienceLevel %></p>
+
+                    <h6>Industries:</h6>
+                    <ul class="list-unstyled">
+                        <% analysis.industries.forEach(function(industry) { %>
+                            <li><span class="badge bg-secondary"><%= industry %></span></li>
+                        <% }); %>
+                    </ul>
+
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            Found <%= stats.totalJobs %> jobs across <%= stats.queriesGenerated %> position types
+                            (up to <%= stats.maxPerPosition %> per position)
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs Section -->
+        <div class="col-md-9">
+            <% 
+            // Create a map for all job titles from analysis
+            const jobsByQuery = new Map();
+            analysis.jobTitles.forEach(title => {
+                jobsByQuery.set(title, []);
+            });
+
+            // Populate with actual jobs
+            jobs.forEach(job => {
+                if (jobsByQuery.has(job.sourceQuery)) {
+                    jobsByQuery.get(job.sourceQuery).push(job);
+                }
+            });
+
+            // Sort jobs within each group by match score
+            jobsByQuery.forEach((jobList) => {
+                jobList.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+            });
+            %>
+
+            <% jobsByQuery.forEach((jobList, query) => { %>
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Jobs for: <%= query %></h5>
+                        <span class="badge bg-light text-dark"><%= jobList.length %> jobs found</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <% if (jobList.length === 0) { %>
+                                <div class="list-group-item text-center py-4">
+                                    <h6 class="text-muted mb-0">No Jobs Found</h6>
+                                </div>
+                            <% } else { %>
+                                <% jobList.forEach(function(job) { %>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="mb-1">
+                                                <a href="<%= job.url %>" target="_blank" class="text-primary">
+                                                    <%= job.title %>
+                                                </a>
+                                            </h5>
+                                            <p class="mb-1">
+                                                <strong><%= job.company %></strong> • <%= job.location %>
+                                            </p>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="h4 mb-0">
+                                                <span class="badge bg-<%= job.matchScore >= 0.7 ? 'success' : (job.matchScore >= 0.4 ? 'warning' : 'danger') %>">
+                                                    <%= Math.round(job.matchScore * 100) %>%
+                                                    <small>match</small>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="job-meta mb-2">
+                                        <% if (job.salary !== 'Not specified') { %>
+                                            <span class="badge bg-success me-2"><%= job.salary %></span>
+                                        <% } %>
+                                        <span class="badge bg-secondary me-2"><%= job.jobType %></span>
+                                        <% if (job.datePosted) { %>
+                                            <span class="badge bg-light text-dark">Posted: <%= job.datePosted %></span>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="collapse" id="jobDetails<%= job.jobId %>">
+                                        <hr>
+                                        <div class="job-description">
+                                            <%- job.description %>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-sm btn-outline-primary mt-2 toggle-details"
+                                            type="button"
+                                            data-jobid="<%= job.jobId %>"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#jobDetails<%= job.jobId %>"
+                                            aria-expanded="false">
+                                        Show Details
+                                    </button>
+                                </div>
+                                <% }); %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<% 
+style = `
+<style>
+    .sticky-top {
+        z-index: 1000;
+    }
+
+    .job-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        padding: 1rem 0;
+    }
+
+    .job-description ul {
+        padding-left: 1.5rem;
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+
+    .collapse:not(.show) {
+        display: none !important;
+    }
+</style>
+`;
+
+script = `
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all collapses
+    const collapses = document.querySelectorAll('.collapse');
+    collapses.forEach(collapse => {
+        collapse.addEventListener('show.bs.collapse', function() {
+            const button = document.querySelector('button[data-jobid="' + this.id.replace('jobDetails', '') + '"]');
+            if (button) {
+                button.classList.add('active');
+                button.classList.remove('btn-outline-primary');
+                button.classList.add('btn-primary');
+                button.textContent = 'Hide Details';
+            }
+        });
+
+        collapse.addEventListener('hide.bs.collapse', function() {
+            const button = document.querySelector('button[data-jobid="' + this.id.replace('jobDetails', '') + '"]');
+            if (button) {
+                button.classList.remove('active');
+                button.classList.add('btn-outline-primary');
+                button.classList.remove('btn-primary');
+                button.textContent = 'Show Details';
+            }
+        });
+    });
+});
+</script>
+`;
+%>

@@ -1,0 +1,87 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Upload Your Resume</h4>
+                </div>
+                <div class="card-body">
+                    <form action="/upload" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="resume" class="form-label">Resume File (PDF, DOC, DOCX, or TXT)</label>
+                            <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx,.txt" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Preferred Location</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="e.g., San Francisco, CA" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="positionsToGenerate" class="form-label">Number of Positions to Generate</label>
+                            <input type="number" class="form-control" id="positionsToGenerate" name="positionsToGenerate" 
+                                   min="1" max="100" value="5" required>
+                            <small class="text-muted">
+                                Number of different position types to identify from your resume (1-100).
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="maxJobsPerPosition" class="form-label">Maximum Jobs per Position</label>
+                            <select class="form-select" id="maxJobsPerPosition" name="maxJobsPerPosition" required>
+                                <option value="2">2 jobs per position</option>
+                                <option value="5" selected>5 jobs per position</option>
+                                <option value="10">10 jobs per position</option>
+                                <option value="15">15 jobs per position</option>
+                                <option value="20">20 jobs per position</option>
+                            </select>
+                            <small class="text-muted">
+                                Number of job listings to fetch for each position type identified.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="daysOld" class="form-label">Job Post Age Limit</label>
+                            <select class="form-select" id="daysOld" name="daysOld" required>
+                                <option value="1">Last 24 hours</option>
+                                <option value="3">Last 3 days</option>
+                                <option value="7">Last 7 days</option>
+                                <option value="14" selected>Last 14 days</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                            <small class="text-muted">
+                                Only show jobs posted within this time period.
+                            </small>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                Find Matching Jobs
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">How it works</h5>
+                        <ol class="mb-0">
+                            <li>Upload your resume in PDF, DOC, DOCX, or TXT format</li>
+                            <li>Enter your preferred job location</li>
+                            <li>Specify how many position types you want to explore</li>
+                            <li>Choose your search parameters (jobs per position and age limit)</li>
+                            <li>Our AI will analyze your resume and identify suitable positions</li>
+                            <li>For each position type found, we'll fetch relevant job listings</li>
+                            <li>All jobs are analyzed for match quality with your resume</li>
+                            <li>Review personalized job matches with hiring probability scores</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
