@@ -24,7 +24,7 @@ Local LLM-Powered Job Matching Using Resume Analysis and Indeed Job Scraping
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/HireMeNowAI.git
+git clone https://github.com/epicshardz/HireMeNowAI.git
 cd HireMeNowAI
 ```
 
